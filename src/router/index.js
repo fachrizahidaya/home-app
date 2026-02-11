@@ -2,8 +2,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import authService from "@/services/auth";
 
 // Views
-import LoginView from "@/views/LoginView.vue";
-import DashboardView from "@/views/DashboardView.vue";
+import LoginView from "@/views/login/index.vue";
+import DashboardView from "@/views/dashboard/index.vue";
 
 const routes = [
   {
