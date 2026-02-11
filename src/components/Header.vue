@@ -53,7 +53,6 @@ const toggleMenu = () => {
 </script>
 
 <style scoped>
-/* 🔥 move ALL header-related CSS here */
 .main-header {
   display: flex;
   justify-content: space-between;

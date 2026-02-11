@@ -10,7 +10,6 @@
         :collapsed="sidebarCollapsed"
       >
         <template #icon>
-          <!-- Dashboard -->
           <svg
             v-if="item.icon === 'dashboard'"
             xmlns="http://www.w3.org/2000/svg"
@@ -25,7 +24,6 @@
             />
           </svg>
 
-          <!-- Groceries -->
           <svg
             v-else-if="item.icon === 'groceries'"
             xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +35,6 @@
             />
           </svg>
 
-          <!-- Notes -->
           <svg
             v-else-if="item.icon === 'notes'"
             xmlns="http://www.w3.org/2000/svg"
@@ -54,7 +51,6 @@
             />
           </svg>
 
-          <!-- Homework -->
           <svg
             v-else-if="item.icon === 'homework'"
             xmlns="http://www.w3.org/2000/svg"
@@ -84,7 +80,6 @@
         @logout="handleLogout"
       />
 
-      <!-- Dashboard Content -->
       <div class="dashboard-content">
         <!-- Quick Stats -->
         <div class="stats-grid">
@@ -97,7 +92,6 @@
             :type="stat.type"
           >
             <template #icon>
-              <!-- Groceries Icon -->
               <svg
                 v-if="stat.icon === 'groceries'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -109,7 +103,6 @@
                 />
               </svg>
 
-              <!-- Notes Icon -->
               <svg
                 v-else-if="stat.icon === 'notes'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -126,7 +119,6 @@
                 />
               </svg>
 
-              <!-- Homework Icon -->
               <svg
                 v-else-if="stat.icon === 'homework'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -310,7 +302,6 @@ const handleLogout = async () => {
   router.push("/login");
 };
 
-// Close user menu when clicking outside
 const handleClickOutside = (e) => {
   if (!e.target.closest(".user-menu")) {
     showUserMenu.value = false;

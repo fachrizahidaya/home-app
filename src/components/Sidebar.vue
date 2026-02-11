@@ -51,7 +51,6 @@ const emit = defineEmits(["toggle"]);
 </script>
 
 <style scoped>
-/* 🔥 move ALL sidebar-related CSS here */
 .sidebar {
   width: 260px;
   background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
@@ -141,5 +140,4 @@ const emit = defineEmits(["toggle"]);
     width: 260px;
   }
 }
-/* keep the rest of your sidebar styles unchanged */
 </style>
