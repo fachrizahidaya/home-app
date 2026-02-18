@@ -4,6 +4,8 @@ import authService from "@/services/auth";
 // Views
 import LoginView from "@/views/login/index.vue";
 import DashboardView from "@/views/dashboard/index.vue";
+import RegisterView from "@/views/register/index.vue";
+import VerifyOtpView from "@/views/dashboard/VerifyOtpView.vue";
 
 const routes = [
   {
@@ -16,6 +18,19 @@ const routes = [
     component: LoginView,
     meta: { requiresGuest: true },
   },
+  {
+    path: "/register",
+    name: "Register",
+    component: RegisterView,
+    meta: { requiresGuest: true },
+  },
+  {
+    path: "/verify-otp",
+    name: "Verify OTP",
+    component: VerifyOtpView,
+    meta: { requiresGuest: true },
+  },
+
   {
     path: "/dashboard",
     name: "Dashboard",

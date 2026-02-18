@@ -16,32 +16,73 @@ const actions = {
 
     try {
       const { token, user } = await authService.login(credentials);
+
       state.token = token;
       state.user = user;
       state.isAuthenticated = true;
+
       return { success: true };
     } catch (error) {
       state.error = error.response?.data?.message || "Login failed. Please try again.";
-      return { success: false, error: state.error };
+      return { success: false };
     } finally {
       state.loading = false;
     }
   },
 
+  // 🔥 FIXED REGISTER (NO TOKEN HERE)
   async register(userData) {
     state.loading = true;
     state.error = null;
 
     try {
-      const { token, user } = await authService.register(userData);
-      state.token = token;
-      state.user = user;
-      state.isAuthenticated = true;
+      await authService.register(userData);
+
+      // DO NOT set token or user yet
       return { success: true };
     } catch (error) {
       state.error =
         error.response?.data?.message || "Registration failed. Please try again.";
-      return { success: false, error: state.error };
+      return { success: false };
+    } finally {
+      state.loading = false;
+    }
+  },
+
+  // 🔥 NEW: VERIFY OTP
+  async verifyOtp(payload) {
+    state.loading = true;
+    state.error = null;
+
+    try {
+      const { token, user } = await authService.verifyOtp(payload);
+
+      state.token = token;
+      state.user = user;
+      state.isAuthenticated = true;
+
+      localStorage.setItem("homesync_token", token);
+      localStorage.setItem("homesync_user", JSON.stringify(user));
+
+      return { success: true };
+    } catch (error) {
+      state.error = error.response?.data?.message || "OTP verification failed.";
+      return { success: false };
+    } finally {
+      state.loading = false;
+    }
+  },
+
+  async resendOtp(email) {
+    state.loading = true;
+    state.error = null;
+
+    try {
+      await authService.resendOtp({ email });
+      return { success: true };
+    } catch (error) {
+      state.error = error.response?.data?.message || "Failed to resend OTP.";
+      return { success: false };
     } finally {
       state.loading = false;
     }
@@ -57,6 +98,9 @@ const actions = {
       state.user = null;
       state.isAuthenticated = false;
       state.loading = false;
+
+      localStorage.removeItem("homesync_token");
+      localStorage.removeItem("homesync_user");
     }
   },
 
@@ -81,5 +125,3 @@ export const useAuthStore = () => ({
   state: readonly(state),
   ...actions,
 });
-
-export default useAuthStore;
