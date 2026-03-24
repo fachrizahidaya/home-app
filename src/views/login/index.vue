@@ -1,36 +1,15 @@
 <template>
   <div class="login-container">
-    <div class="features-preview">
-      <h2>Manage your home with ease</h2>
-      <ul class="features-list">
-        <li>🛒 Track groceries & shopping lists</li>
-        <li>📝 Organize family notes</li>
-        <li>📚 Manage homework tasks</li>
-      </ul>
+    <div class="login-image">
+      <img src="/src/assets/image/login.jpg" alt="Login Image" />
     </div>
-
     <div class="login-card">
       <div class="login-header">
-        <div class="logo">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="logo-icon"
-          >
-            <path
-              d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"
-            />
-            <path
-              d="M12 5.432l8.159 8.159v6.284c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625A1.875 1.875 0 013.75 19.125v-6.284L12 5.432z"
-            />
-          </svg>
-        </div>
-        <h1>HomeSync</h1>
-        <p class="tagline">Your smart home management companion</p>
+        <h1>Welcome Back</h1>
+        <p class="tagline">Please enter your details to manage your home</p>
       </div>
 
-      <form @submit.prevent="handleLogin" class="login-form">
+      <form @submit.prevent.stop="handleLogin" class="login-form">
         <div v-if="authStore.state.error" class="error-message">
           {{ authStore.state.error }}
         </div>
@@ -56,11 +35,11 @@
         />
 
         <div class="form-options">
-          <label class="checkbox-label">
+          <!-- <label class="checkbox-label">
             <input type="checkbox" v-model="form.remember" />
             <span>Remember me</span>
-          </label>
-          <a href="#" class="forgot-link">Forgot password?</a>
+          </label> -->
+          <a href="#" @click.prevent class="forgot-link">Forgot password?</a>
         </div>
 
         <BaseButton type="submit" :loading="authStore.state.loading">
@@ -69,7 +48,10 @@
       </form>
 
       <div class="login-footer">
-        <p>Don't have an account? <a href="#">Sign up</a></p>
+        <p>
+          Don't have an account?
+          <router-link to="/register">Sign up</router-link>
+        </p>
       </div>
     </div>
   </div>
@@ -87,6 +69,8 @@ const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 
+let errorTimeout = null;
+
 const form = reactive({
   email: "",
   password: "",
@@ -96,21 +80,33 @@ const form = reactive({
 const handleLogin = async () => {
   authStore.clearError();
 
+  if (errorTimeout) clearTimeout(errorTimeout);
+
   const result = await authStore.login({
     email: form.email,
     password: form.password,
     remember: form.remember,
   });
 
+  // ✅ SUCCESS
   if (result.success) {
     const redirectPath = route.query.redirect || "/dashboard";
     router.push(redirectPath);
+    return;
   }
+
+  // 🔥 VERIFY OTP FLOW
+  if (result.requiresVerification) {
+    router.push({
+      path: "/verify-otp",
+      query: { email: result.email },
+    });
+    return;
+  }
+
+  // ❌ NORMAL ERROR
+  errorTimeout = setTimeout(() => {
+    authStore.clearError();
+  }, 3000);
 };
 </script>
-
-<style scoped>
-.feature-icon {
-  font-size: 1.5rem;
-}
-</style>

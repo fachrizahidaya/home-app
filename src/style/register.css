@@ -1,0 +1,16 @@
+.username-check {
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.username-check.available {
+  color: #16a34a;
+}
+
+.username-check.taken {
+  color: #dc2626;
+}
+
+.username-check.checking {
+  color: #6b7280;
+}
