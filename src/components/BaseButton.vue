@@ -1,6 +1,6 @@
 <template>
   <button
-    :type="type"
+    :type="type || 'button'"
     class="base-button"
     :class="{ 'is-loading': loading }"
     :disabled="disabled || loading"
@@ -25,6 +25,10 @@ defineProps({
   disabled: {
     type: Boolean,
     default: false,
+  },
+  variant: {
+    type: String,
+    default: "primary", // primary | secondary | link
   },
 });
 </script>

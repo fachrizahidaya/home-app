@@ -15,7 +15,19 @@ const actions = {
     state.error = null;
 
     try {
-      const { token, user } = await authService.login(credentials);
+      const result = await authService.login(credentials);
+
+      // 👇 HANDLE VERIFY FLOW
+      if (result.requiresVerification) {
+        return {
+          success: false,
+          requiresVerification: true,
+          email: result.email,
+          message: result.message,
+        };
+      }
+
+      const { token, user } = result;
 
       state.token = token;
       state.user = user;

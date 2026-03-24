@@ -37,7 +37,6 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem("homesync_token");
       localStorage.removeItem("homesync_user");
-      window.location.href = "/login";
     }
     return Promise.reject(error);
   },

@@ -5,7 +5,7 @@ import authService from "@/services/auth";
 import LoginView from "@/views/login/index.vue";
 import DashboardView from "@/views/dashboard/index.vue";
 import RegisterView from "@/views/register/index.vue";
-import VerifyOtpView from "@/views/dashboard/VerifyOtpView.vue";
+import VerifyOtpView from "@/views/verify/index.vue";
 
 const routes = [
   {

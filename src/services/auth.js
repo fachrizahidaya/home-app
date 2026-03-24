@@ -5,13 +5,28 @@ export const authService = {
   // LOGIN
   // =========================
   async login(credentials) {
-    const response = await api.post("/auth/login", credentials);
-    const { access_token, user } = response.data.data;
+    try {
+      const response = await api.post("/auth/login", credentials);
+      const { access_token, user } = response.data.data;
 
-    localStorage.setItem("homesync_token", access_token);
-    localStorage.setItem("homesync_user", JSON.stringify(user));
+      localStorage.setItem("homesync_token", access_token);
+      localStorage.setItem("homesync_user", JSON.stringify(user));
 
-    return { token: access_token, user };
+      return { token: access_token, user };
+    } catch (error) {
+      const res = error.response;
+
+      // 👇 HANDLE UNVERIFIED USER
+      if (res?.status === 403 && res.data?.requires_verification) {
+        return {
+          requiresVerification: true,
+          email: res.data.email,
+          message: res.data.message,
+        };
+      }
+
+      throw error;
+    }
   },
 
   // =========================
@@ -45,7 +60,7 @@ export const authService = {
   // RESEND OTP
   // =========================
   async resendOtp(payload) {
-    const response = await api.post("/resend-otp", payload);
+    const response = await api.post("/auth/resend-otp", payload);
     return response.data;
   },
 

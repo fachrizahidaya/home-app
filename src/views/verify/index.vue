@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+  <div class="otp-container">
     <div class="login-card">
       <div class="login-header">
         <h1>Verify Email</h1>
@@ -8,7 +8,7 @@
 
       <form @submit.prevent="handleVerify" class="login-form">
         <div v-if="authStore.error" class="error-message">
-          {{ authStore.error }}
+          {{ authStore.state.error }}
         </div>
 
         <FormGroup
@@ -20,11 +20,11 @@
           required
         />
 
-        <BaseButton type="submit" :loading="authStore.loading"> Verify </BaseButton>
+        <BaseButton type="submit" :loading="authStore.loading">Verify</BaseButton>
 
-        <button type="button" class="forgot-link" @click="handleResend">
-          Resend OTP
-        </button>
+        <BaseButton type="button" variant="secondary" @click="handleResend"
+          >Resend OTP
+        </BaseButton>
       </form>
     </div>
   </div>
@@ -36,6 +36,8 @@ import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import FormGroup from "@/components/FormGroup.vue";
 import BaseButton from "@/components/BaseButton.vue";
+import "@/style/verify-otp.css";
+import "@/style/login.css";
 
 const route = useRoute();
 const router = useRouter();
