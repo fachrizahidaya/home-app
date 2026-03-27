@@ -6,3 +6,30 @@
   align-items: center;
   overflow: hidden;
 }
+
+.btn-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* rotate so it starts from top */
+.mini-ring {
+  transform: rotate(-90deg);
+}
+
+.mini-bg {
+  fill: transparent;
+  stroke: #ddd;
+  stroke-width: 2;
+}
+
+.mini-progress {
+  fill: transparent;
+  stroke: #4caf50;
+  stroke-width: 2;
+  stroke-linecap: round;
+
+  /* 🔥 THIS makes it smooth per second */
+  transition: stroke-dashoffset 1s linear;
+}

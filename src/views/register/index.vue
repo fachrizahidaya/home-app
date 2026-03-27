@@ -5,21 +5,6 @@
     </div>
     <div class="login-card">
       <div class="login-header">
-        <!-- <div class="logo">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="logo-icon"
-          >
-            <path
-              d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"
-            />
-            <path
-              d="M12 5.432l8.159 8.159v6.284c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625A1.875 1.875 0 013.75 19.125v-6.284L12 5.432z"
-            />
-          </svg>
-        </div> -->
         <h1>HomeSync</h1>
         <p class="tagline">Create your account to get started</p>
       </div>
@@ -27,6 +12,10 @@
       <form @submit.prevent="handleRegister" class="login-form">
         <div v-if="authStore.state.error" class="error-message">
           {{ authStore.state.error }}
+        </div>
+
+        <div v-else-if="authStore.state.successMessage" class="success-message">
+          {{ authStore.state.successMessage }}
         </div>
 
         <FormGroup
@@ -38,30 +27,6 @@
           :disabled="authStore.state.loading"
           required
         />
-
-        <div>
-          <FormGroup
-            id="username"
-            label="Username"
-            type="text"
-            placeholder="Choose a username"
-            v-model="form.username"
-            :disabled="authStore.state.loading"
-            required
-          />
-
-          <p v-if="usernameStatus === 'checking'" class="username-check checking">
-            Checking availability...
-          </p>
-
-          <p v-if="usernameStatus === 'available'" class="username-check available">
-            ✓ Username is available
-          </p>
-
-          <p v-if="usernameStatus === 'taken'" class="username-check taken">
-            ✕ Username is already taken
-          </p>
-        </div>
 
         <FormGroup
           id="email"
@@ -92,12 +57,14 @@
           :disabled="authStore.state.loading"
           required
         />
-
-        <BaseButton
-          type="submit"
-          :loading="authStore.state.loading"
-          :disabled="usernameStatus === 'taken' || usernameStatus === 'checking'"
+        <p
+          v-if="isPasswordFilled"
+          :class="['password-check', isPasswordMatch ? 'match' : 'not-match']"
         >
+          {{ isPasswordMatch ? "✓ Passwords match" : "✕ Passwords do not match" }}
+        </p>
+
+        <BaseButton type="submit" :loading="authStore.state.loading" :disabled="false">
           Create Account
         </BaseButton>
       </form>
@@ -113,57 +80,47 @@
 </template>
 
 <script setup>
-import { reactive, watch, ref } from "vue";
+import { reactive, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import FormGroup from "@/components/FormGroup.vue";
 import BaseButton from "@/components/BaseButton.vue";
-import api from "@/services/api"; // axios instance
 import "@/style/login.css";
 import "@/style/register.css";
 
 const router = useRouter();
 const authStore = useAuthStore();
 
+let errorTimeout = null;
+
 const form = reactive({
   name: "",
-  username: "",
   email: "",
   password: "",
   password_confirmation: "",
 });
 
-const usernameStatus = ref(null);
-let debounceTimer = null;
+const isPasswordMatch = computed(() => {
+  return (
+    form.password &&
+    form.password_confirmation &&
+    form.password === form.password_confirmation
+  );
+});
 
-watch(
-  () => form.username,
-  (value) => {
-    usernameStatus.value = null;
-
-    if (!value || value.length < 3) return;
-
-    clearTimeout(debounceTimer);
-
-    debounceTimer = setTimeout(async () => {
-      usernameStatus.value = "checking";
-      try {
-        const response = await api.post("/auth/check-username", {
-          username: value,
-        });
-
-        usernameStatus.value = response.data.available ? "available" : "taken";
-      } catch {
-        usernameStatus.value = null;
-      }
-    }, 500);
-  },
-);
+const isPasswordFilled = computed(() => {
+  return form.password && form.password_confirmation;
+});
 
 const handleRegister = async () => {
   authStore.clearError();
 
-  if (usernameStatus.value === "taken") return;
+  if (!isPasswordMatch.value) {
+    authStore.state.error = "Passwords do not match";
+    return;
+  }
+
+  if (errorTimeout) clearTimeout(errorTimeout);
 
   const result = await authStore.register(form);
 
@@ -173,5 +130,9 @@ const handleRegister = async () => {
       query: { email: form.email },
     });
   }
+
+  errorTimeout = setTimeout(() => {
+    authStore.clearError();
+  }, 3000);
 };
 </script>

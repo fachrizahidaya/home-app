@@ -14,6 +14,10 @@
           {{ authStore.state.error }}
         </div>
 
+        <div v-else-if="authStore.state.successMessage" class="success-message">
+          {{ authStore.state.successMessage }}
+        </div>
+
         <FormGroup
           id="email"
           label="Email"
@@ -88,14 +92,12 @@ const handleLogin = async () => {
     remember: form.remember,
   });
 
-  // ✅ SUCCESS
   if (result.success) {
     const redirectPath = route.query.redirect || "/dashboard";
     router.push(redirectPath);
     return;
   }
 
-  // 🔥 VERIFY OTP FLOW
   if (result.requiresVerification) {
     router.push({
       path: "/verify-otp",
@@ -104,7 +106,6 @@ const handleLogin = async () => {
     return;
   }
 
-  // ❌ NORMAL ERROR
   errorTimeout = setTimeout(() => {
     authStore.clearError();
   }, 3000);
