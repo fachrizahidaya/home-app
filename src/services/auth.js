@@ -16,7 +16,7 @@ export const authService = {
     } catch (error) {
       const res = error.response;
 
-      // 👇 HANDLE UNVERIFIED USER
+      // HANDLE UNVERIFIED USER
       if (res?.status === 403 && res.data?.requires_verification) {
         return {
           requiresVerification: true,
@@ -44,12 +44,15 @@ export const authService = {
   // =========================
   // VERIFY OTP (THIS RETURNS TOKEN)
   // =========================
-  async verifyOtp(payload) {
-    const response = await api.post("/auth/verify-otp", payload);
+  async verifyOtp({ email, otp }) {
+    const response = await api.post("/auth/verify-otp", {
+      email,
+      otp,
+    });
 
     const { token, user } = response.data.data;
 
-    // Save token AFTER verification
+    // Save once here (single source of truth)
     localStorage.setItem("homesync_token", token);
     localStorage.setItem("homesync_user", JSON.stringify(user));
 

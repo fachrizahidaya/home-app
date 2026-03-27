@@ -14,3 +14,16 @@
 .username-check.checking {
   color: #6b7280;
 }
+
+.password-check {
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.password-check.match {
+  color: #16a34a; /* green */
+}
+
+.password-check.not-match {
+  color: #dc2626; /* red */
+}

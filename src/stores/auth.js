@@ -7,6 +7,7 @@ const state = reactive({
   isAuthenticated: authService.isAuthenticated(),
   loading: false,
   error: null,
+  successMessage: null,
 });
 
 const actions = {
@@ -17,7 +18,7 @@ const actions = {
     try {
       const result = await authService.login(credentials);
 
-      // 👇 HANDLE VERIFY FLOW
+      // HANDLE VERIFY FLOW
       if (result.requiresVerification) {
         return {
           success: false,
@@ -42,7 +43,7 @@ const actions = {
     }
   },
 
-  // 🔥 FIXED REGISTER (NO TOKEN HERE)
+  // REGISTER (NO TOKEN HERE)
   async register(userData) {
     state.loading = true;
     state.error = null;
@@ -61,7 +62,7 @@ const actions = {
     }
   },
 
-  // 🔥 NEW: VERIFY OTP
+  // VERIFY OTP
   async verifyOtp(payload) {
     state.loading = true;
     state.error = null;
@@ -72,9 +73,6 @@ const actions = {
       state.token = token;
       state.user = user;
       state.isAuthenticated = true;
-
-      localStorage.setItem("homesync_token", token);
-      localStorage.setItem("homesync_user", JSON.stringify(user));
 
       return { success: true };
     } catch (error) {
@@ -88,9 +86,13 @@ const actions = {
   async resendOtp(email) {
     state.loading = true;
     state.error = null;
+    state.successMessage = null; // reset before request
 
     try {
       await authService.resendOtp({ email });
+
+      state.successMessage = "OTP has been resent successfully."; // ✅ SET SUCCESS
+
       return { success: true };
     } catch (error) {
       state.error = error.response?.data?.message || "Failed to resend OTP.";
@@ -130,6 +132,10 @@ const actions = {
 
   clearError() {
     state.error = null;
+  },
+
+  clearSuccess() {
+    state.successMessage = null;
   },
 };
 
