@@ -37,7 +37,7 @@ const routes = [
     component: DashboardView,
     meta: { requiresAuth: true },
   },
-  // Future routes for HomeSync features
+
   {
     path: "/groceries",
     name: "Groceries",

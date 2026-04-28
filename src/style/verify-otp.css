@@ -1,10 +1,64 @@
 .otp-container {
-  position: relative;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  background: #f9fafb;
+}
+
+.otp-card {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.otp-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.otp-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.tagline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.otp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.otp-form button {
+  width: 100%;
+}
+
+.error-message {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+.success-message {
+  background: #e6f9f0;
+  color: #1a7f5a;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.875rem;
 }
 
 .btn-content {
@@ -13,7 +67,6 @@
   gap: 8px;
 }
 
-/* rotate so it starts from top */
 .mini-ring {
   transform: rotate(-90deg);
 }
@@ -29,7 +82,36 @@
   stroke: #4caf50;
   stroke-width: 2;
   stroke-linecap: round;
-
-  /* 🔥 THIS makes it smooth per second */
   transition: stroke-dashoffset 1s linear;
+}
+
+@media (max-width: 1024px) {
+  .otp-card {
+    max-width: 380px;
+    padding: 28px;
+  }
+
+  .otp-header h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .otp-container {
+    padding: 16px;
+  }
+
+  .otp-card {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .otp-card {
+    padding: 16px;
+  }
+
+  .otp-header h1 {
+    font-size: 1.2rem;
+  }
 }

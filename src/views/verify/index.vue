@@ -1,12 +1,12 @@
 <template>
   <div class="otp-container">
-    <div class="login-card">
-      <div class="login-header">
+    <div class="otp-card">
+      <div class="otp-header">
         <h1>Verify Email</h1>
         <p class="tagline">Enter the 6-digit code sent to your email</p>
       </div>
 
-      <form @submit.prevent.stop="handleVerify" class="login-form">
+      <form @submit.prevent.stop="handleVerify" class="otp-form">
         <div v-if="authStore.state.error" class="error-message">
           {{ authStore.state.error }}
         </div>
@@ -48,7 +48,6 @@ import { useAuthStore } from "@/stores/auth";
 import FormGroup from "@/components/FormGroup.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import "@/style/verify-otp.css";
-import "@/style/login.css";
 
 const route = useRoute();
 const router = useRouter();
@@ -126,7 +125,13 @@ const handleVerify = async () => {
     });
 
     if (result.success) {
-      router.push("/login");
+      router.push({
+        path: "/login",
+        query: {
+          email: form.email,
+          verified: "true",
+        },
+      });
     } else {
       errorTimeout = setTimeout(() => {
         authStore.clearError();
