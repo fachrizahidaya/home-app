@@ -53,8 +53,6 @@ export const authService = {
     const { token, user } = response.data.data;
 
     // Save once here (single source of truth)
-    localStorage.setItem("homesync_token", token);
-    localStorage.setItem("homesync_user", JSON.stringify(user));
 
     return { token, user };
   },

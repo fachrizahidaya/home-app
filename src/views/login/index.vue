@@ -3,6 +3,7 @@
     <div class="login-image">
       <img src="/src/assets/image/login.jpg" alt="Login Image" />
     </div>
+
     <div class="login-card">
       <div class="login-header">
         <h1>Welcome Back</h1>
@@ -39,10 +40,6 @@
         />
 
         <div class="form-options">
-          <!-- <label class="checkbox-label">
-            <input type="checkbox" v-model="form.remember" />
-            <span>Remember me</span>
-          </label> -->
           <a href="#" @click.prevent class="forgot-link">Forgot password?</a>
         </div>
 
@@ -62,7 +59,7 @@
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { reactive, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import FormGroup from "@/components/FormGroup.vue";
@@ -74,6 +71,18 @@ const route = useRoute();
 const authStore = useAuthStore();
 
 let errorTimeout = null;
+
+onMounted(() => {
+  if (route.query.verified) {
+    authStore.state.successMessage = "Email verified successfully. Please login.";
+  }
+});
+
+onMounted(() => {
+  if (route.query.email) {
+    form.email = route.query.email;
+  }
+});
 
 const form = reactive({
   email: "",
@@ -105,6 +114,10 @@ const handleLogin = async () => {
     });
     return;
   }
+
+  setTimeout(() => {
+    authStore.clearSuccess();
+  }, 3000);
 
   errorTimeout = setTimeout(() => {
     authStore.clearError();

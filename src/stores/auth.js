@@ -8,6 +8,11 @@ const state = reactive({
   loading: false,
   error: null,
   successMessage: null,
+  snackbar: {
+    show: false,
+    message: "",
+    color: "success",
+  },
 });
 
 const actions = {
@@ -68,11 +73,7 @@ const actions = {
     state.error = null;
 
     try {
-      const { token, user } = await authService.verifyOtp(payload);
-
-      state.token = token;
-      state.user = user;
-      state.isAuthenticated = true;
+      await authService.verifyOtp(payload);
 
       return { success: true };
     } catch (error) {
@@ -136,6 +137,16 @@ const actions = {
 
   clearSuccess() {
     state.successMessage = null;
+  },
+
+  showSnackbar(message, color = "success") {
+    this.snackbar.show = true;
+    this.snackbar.message = message;
+    this.snackbar.color = color;
+
+    setTimeout(() => {
+      this.snackbar.show = false;
+    }, 3000);
   },
 };
 
