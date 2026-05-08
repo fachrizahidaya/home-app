@@ -1,14 +1,25 @@
 <template>
-  <div class="placeholder-view">
-    <div class="placeholder-content">
-      <div class="icon">🛒</div>
-      <h1>Groceries</h1>
-      <p>Manage your shopping list and grocery items.</p>
-      <p class="coming-soon">Full feature coming soon!</p>
-      <router-link to="/dashboard" class="back-link">← Back to Dashboard</router-link>
-    </div>
-  </div>
+  <AppLayout
+    :collapsed="sidebarCollapsed"
+    :items="sidebarItems"
+    :user-name="userName"
+    :user-initials="userInitials"
+    @toggleSidebar="toggleSidebar"
+    @logout="handleLogout"
+  >
+    <div></div
+  ></AppLayout>
 </template>
+
+<script setup>
+import { sidebarItems } from "@/configs/sidebar";
+
+import AppLayout from "@/layouts/AppLayout.vue";
+import { useAppLayout } from "@/composables/useAppLayout";
+
+const { sidebarCollapsed, userName, userInitials, toggleSidebar, handleLogout } =
+  useAppLayout();
+</script>
 
 <style scoped>
 .placeholder-view {
