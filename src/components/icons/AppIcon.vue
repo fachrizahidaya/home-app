@@ -1,5 +1,5 @@
 <template>
-  <component :is="iconComponent" v-if="iconComponent" />
+  <component :is="iconComponent" v-if="iconComponent" class="app-icon" />
 </template>
 
 <script setup>
@@ -23,3 +23,10 @@ const icons = {
 
 const iconComponent = computed(() => icons[props.name]);
 </script>
+
+<style>
+.app-icon {
+  width: 20px;
+  height: 20px;
+}
+</style>
