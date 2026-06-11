@@ -3,6 +3,7 @@
     <span class="nav-icon">
       <slot name="icon" />
     </span>
+
     <span v-if="!collapsed" class="nav-label">
       {{ label }}
     </span>
@@ -14,12 +15,24 @@ import { computed } from "vue";
 import { useRoute } from "vue-router";
 
 const props = defineProps({
-  to: { type: String, required: true },
-  label: { type: String, required: true },
-  collapsed: { type: Boolean, default: false },
+  to: {
+    type: String,
+    required: true,
+  },
+
+  label: {
+    type: String,
+    required: true,
+  },
+
+  collapsed: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const route = useRoute();
+
 const isActive = computed(() => route.path === props.to);
 </script>
 
@@ -44,8 +57,19 @@ const isActive = computed(() => route.path === props.to);
   border-left: 3px solid #667eea;
 }
 
+.nav-icon {
+  width: 20px;
+  height: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
 .nav-icon svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 </style>

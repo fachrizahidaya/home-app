@@ -35,26 +35,50 @@ const routes = [
     path: "/dashboard",
     name: "Dashboard",
     component: DashboardView,
-    meta: { requiresAuth: true },
+    meta: {
+      requiresAuth: true,
+      sidebar: {
+        label: "Dashboard",
+        icon: "dashboard",
+      },
+    },
   },
 
   {
     path: "/groceries",
     name: "Groceries",
-    component: () => import("@/views/GroceriesView.vue"),
-    meta: { requiresAuth: true },
+    component: () => import("@/views/groceries/GroceriesView.vue"),
+    meta: {
+      requiresAuth: true,
+      sidebar: {
+        label: "Groceries",
+        icon: "groceries",
+      },
+    },
   },
   {
     path: "/notes",
     name: "Notes",
     component: () => import("@/views/NotesView.vue"),
-    meta: { requiresAuth: true },
+    meta: {
+      requiresAuth: true,
+      sidebar: {
+        label: "Notes",
+        icon: "notes",
+      },
+    },
   },
   {
     path: "/homework",
     name: "Homework",
     component: () => import("@/views/HomeworkView.vue"),
-    meta: { requiresAuth: true },
+    meta: {
+      requiresAuth: true,
+      sidebar: {
+        label: "Homework",
+        icon: "homework",
+      },
+    },
   },
   {
     path: "/:pathMatch(.*)*",

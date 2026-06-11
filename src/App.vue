@@ -1,13 +1,10 @@
-<script setup>
-import AppSnackbar from "./components/AppSnackbar.vue";
-
-// HomeSync - Home Management Application
-</script>
-
 <template>
   <router-view />
-  <AppSnackbar />
 </template>
+
+<script setup>
+// HomeSync - Home Management Application
+</script>
 
 <style>
 /* Global styles handled in main.css */
