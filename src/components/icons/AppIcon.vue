@@ -9,6 +9,7 @@ import IconDashboard from "./IconDashboard.vue";
 import IconGroceries from "./IconGroceries.vue";
 import IconNotes from "./IconNotes.vue";
 import IconHomework from "./IconHomework.vue";
+import IconEcosystem from "./IconEcosystem.vue";
 
 const props = defineProps({
   name: String,
@@ -19,6 +20,7 @@ const icons = {
   groceries: IconGroceries,
   notes: IconNotes,
   homework: IconHomework,
+  family: IconEcosystem,
 };
 
 const iconComponent = computed(() => icons[props.name]);
