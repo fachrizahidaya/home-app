@@ -59,7 +59,7 @@ const routes = [
   {
     path: "/notes",
     name: "Notes",
-    component: () => import("@/views/NotesView.vue"),
+    component: () => import("@/views/Notes.vue"),
     meta: {
       requiresAuth: true,
       sidebar: {
@@ -71,12 +71,24 @@ const routes = [
   {
     path: "/homework",
     name: "Homework",
-    component: () => import("@/views/HomeworkView.vue"),
+    component: () => import("@/views/homework/HomeworkView.vue"),
     meta: {
       requiresAuth: true,
       sidebar: {
         label: "Homework",
         icon: "homework",
+      },
+    },
+  },
+  {
+    path: "/family",
+    name: "Family",
+    component: () => import("@/views/Family.vue"),
+    meta: {
+      requiresAuth: true,
+      sidebar: {
+        label: "Family",
+        icon: "family",
       },
     },
   },

@@ -17,10 +17,6 @@
             Simpan catatan, pengingat, ide, dan informasi penting keluarga.
           </p>
         </div>
-
-        <button class="ghost-button" type="button" @click="resetForm">
-          Catatan Baru
-        </button>
       </div>
 
       <!-- Error -->
@@ -33,16 +29,6 @@
         <article class="summary-card">
           <span>Total Catatan</span>
           <strong>{{ notes.length }}</strong>
-        </article>
-
-        <article class="summary-card">
-          <span>Catatan Hari Ini</span>
-          <strong>{{ todayNotesCount }}</strong>
-        </article>
-
-        <article class="summary-card">
-          <span>Terakhir Diupdate</span>
-          <strong>{{ latestUpdateLabel }}</strong>
         </article>
       </div>
 
@@ -112,39 +98,23 @@
         <section class="notes-panel">
           <div class="section-heading">
             <h2>Daftar Catatan</h2>
-            <span>{{ notes.length }} catatan</span>
           </div>
 
-          <div v-if="notes.length" class="notes-list">
-            <article v-for="note in notes" :key="note.id" class="note-card">
-              <div class="note-card-top">
-                <div>
-                  <h3>{{ note.title }}</h3>
+          <div v-if="notes.length">
+            <div
+              v-for="note in notes"
+              :key="note.id"
+              style="border: 1px solid #ccc; padding: 12px; margin-bottom: 12px"
+            >
+              <h3>{{ note.title }}</h3>
 
-                  <p>
-                    {{ truncate(note.content, 120) }}
-                  </p>
-                </div>
-              </div>
+              <p>{{ note.content }}</p>
 
-              <small>
-                {{ formatDate(note.updated_at) }}
-              </small>
-
-              <div class="note-actions">
-                <button type="button" @click="editNote(note)">Edit</button>
-
-                <button type="button" class="danger-button" @click="deleteNote(note.id)">
-                  Hapus
-                </button>
-              </div>
-            </article>
+              <small>{{ note.updated_at }}</small>
+            </div>
           </div>
 
-          <div v-else class="empty-state">
-            <strong>Belum ada catatan.</strong>
-            <p>Buat catatan pertama Anda.</p>
-          </div>
+          <div v-else>Tidak ada data</div>
         </section>
       </div>
     </section>
@@ -152,9 +122,11 @@
 </template>
 
 <script setup>
+import { useAppLayout } from "@/composables/useAppLayout";
 import { sidebarItems } from "@/configs/sidebar";
 import AppLayout from "@/layouts/AppLayout.vue";
-import { reactive, ref } from "vue";
+import notesService from "@/services/notes";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 
 const notes = ref([]);
 
@@ -168,8 +140,36 @@ const form = reactive({
 const isSaving = ref(false);
 const errorMessage = ref("");
 
+const { sidebarCollapsed, userName, userInitials, toggleSidebar, handleLogout } =
+  useAppLayout();
+
+const todayNotesCount = computed(() => {
+  const today = new Date().toISOString().slice(0, 10);
+
+  return notes.value.filter((note) => note.created_at?.slice(0, 10) === today).length;
+});
+
+const latestUpdateLabel = computed(() => {
+  if (!notes.value.length) return "-";
+
+  return formatDate(notes.value[0].updated_at);
+});
+
 async function loadNotes() {
-  notes.value = await notesService.getAll();
+  try {
+    errorMessage.value = "";
+
+    const data = await notesService.getNotes();
+    console.log(data);
+
+    notes.value = Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error(error);
+
+    errorMessage.value = "Gagal memuat catatan.";
+
+    notes.value = [];
+  }
 }
 
 async function saveNote() {
@@ -179,9 +179,9 @@ async function saveNote() {
   };
 
   if (editingId.value) {
-    await notesService.update(editingId.value, payload);
+    await notesService.updateNote(editingId.value, payload);
   } else {
-    await notesService.create(payload);
+    await notesService.createNote(payload);
   }
 
   resetForm();
@@ -198,7 +198,7 @@ function editNote(note) {
 }
 
 async function deleteNote(id) {
-  await notesService.delete(id);
+  await notesService.deleteNote(id);
   await loadNotes();
 }
 
@@ -210,6 +210,20 @@ function resetForm() {
     content: "",
   });
 }
+
+function formatDate(value) {
+  if (!value) return "-";
+
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(parseDateInput(value));
+}
+
+onMounted(() => {
+  loadNotes();
+});
 </script>
 
 <style scoped>
@@ -220,10 +234,22 @@ function resetForm() {
 }
 
 .note-card {
-  padding: 1rem;
-  background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  transition: 0.25s;
+  background: white;
+}
+
+.note-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+}
+
+.note-card h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #0f172a;
 }
 
 .note-card-top {
@@ -231,14 +257,52 @@ function resetForm() {
 }
 
 .note-card p {
-  margin-top: 0.5rem;
+  margin: 0.75rem 0;
   color: #64748b;
+  line-height: 1.6;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.note-card small {
+  display: block;
+  color: #94a3b8;
+  margin-bottom: 1rem;
 }
 
 .note-actions {
   display: flex;
   gap: 0.75rem;
-  margin-top: 1rem;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.note-actions button {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  color: #0f766e;
+  background: #ecfdf5;
+  transition: all 0.2s ease;
+}
+
+.note-actions button:hover {
+  background: #d1fae5;
+}
+
+.note-actions .danger-button {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+.note-actions .danger-button:hover {
+  background: #fecaca;
 }
 
 textarea {
@@ -248,5 +312,94 @@ textarea {
   border-radius: 8px;
   resize: vertical;
   font: inherit;
+}
+
+.notes-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.panel,
+.notes-panel {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.panel-title,
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.panel-title h2,
+.section-heading h2 {
+  margin: 0.25rem 0 0;
+}
+
+.section-heading span {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.form-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field span {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  font: inherit;
+  transition: 0.2s;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 220px;
+}
+
+.form-footer {
+  margin-top: 1.5rem;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
 </style>
