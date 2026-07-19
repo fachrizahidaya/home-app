@@ -50,11 +50,15 @@ export const authService = {
       otp,
     });
 
-    const { token, user } = response.data.data;
+    const { access_token, user } = response.data.data;
 
-    // Save once here (single source of truth)
+    localStorage.setItem("homesync_token", access_token);
+    localStorage.setItem("homesync_user", JSON.stringify(user));
 
-    return { token, user };
+    return {
+      token: access_token,
+      user,
+    };
   },
 
   // =========================
